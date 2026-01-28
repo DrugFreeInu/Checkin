@@ -37,6 +37,25 @@
   </style>
 </head>
 <body>
-  <a class="btn" href="#checkin">Check in</a>
+  <a
+  class="btn"
+  href="https://github.com/drugfreeinu/Checkin/issues/new?title=check-in&body="
+  target="_blank"
+  rel="noopener"
+>
+  Check in
+</a>
+<div id="count">0</div>
+
+<script>
+async function fetchState() {
+  const res = await fetch('/data/state.json?_=' + Date.now());
+  const data = await res.json();
+  document.getElementById('count').textContent = data.count;
+}
+
+setInterval(fetchState, 5000);
+fetchState();
+</script>
 </body>
 </html>
