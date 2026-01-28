@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CheckIn</title>
-  <meta name="description" content="Check in." />
+  <meta name="description" content="A quiet place to check in." />
   <style>
     html,body{
       margin:0;
@@ -13,10 +13,12 @@
     }
     body{
       display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
       background:#0f1412;
       font-family:system-ui,-apple-system,Segoe UI,Inter,Helvetica,Arial,sans-serif;
+      color:#e9efe9;
     }
     .btn{
       padding:18px 28px;
@@ -34,28 +36,74 @@
     .btn:active{
       transform:translateY(1px);
     }
+    #presence{
+      margin-top:14px;
+      font-size:14px;
+      color:#a8b3ad;
+      animation:breathe 6s ease-in-out infinite;
+      text-align:center;
+    }
+    @keyframes breathe{
+      0%{opacity:.4}
+      50%{opacity:.9}
+      100%{opacity:.4}
+    }
+    #local{
+      margin-top:10px;
+      font-size:13px;
+      color:#6f7f78;
+    }
   </style>
 </head>
 <body>
-  <a
-  class="btn"
-  href="https://github.com/drugfreeinu/Checkin/issues/new?title=check-in&body="
-  target="_blank"
-  rel="noopener"
->
-  Check in
-</a>
-<div id="count">0</div>
+
+  <button class="btn" id="checkBtn">Check in</button>
+
+  <div id="presence">This moment is active.</div>
+  <div id="local"></div>
 
 <script>
-async function fetchState() {
-  const res = await fetch('/data/state.json?_=' + Date.now());
-  const data = await res.json();
-  document.getElementById('count').textContent = data.count;
-}
+  const btn = document.getElementById('checkBtn');
+  const local = document.getElementById('local');
 
-setInterval(fetchState, 5000);
-fetchState();
+  // local-only check-in log
+  let log = JSON.parse(localStorage.getItem('checkin-log') || '[]');
+
+  function updateLocal(){
+    if(log.length === 0){
+      local.textContent = '';
+      return;
+    }
+    const last = new Date(log[log.length - 1]);
+    local.textContent = 'Last check-in: ' + last.toLocaleString();
+  }
+
+  btn.addEventListener('click', () => {
+    log.push(new Date().toISOString());
+    localStorage.setItem('checkin-log', JSON.stringify(log));
+    btn.textContent = 'Checked in';
+    btn.disabled = true;
+    updateLocal();
+  });
+
+  updateLocal();
+
+  // shared-time presence message
+  const messages = [
+    'This moment is active.',
+    'Others are here too.',
+    'You are not late.',
+    'You showed up.'
+  ];
+
+  function updatePresence(){
+    const i = Math.floor(Date.now() / 300000) % messages.length;
+    document.getElementById('presence').textContent = messages[i];
+  }
+
+  updatePresence();
+  setInterval(updatePresence, 60000);
 </script>
+
 </body>
 </html>
