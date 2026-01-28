@@ -66,29 +66,31 @@
   const btn = document.getElementById('checkBtn');
   const local = document.getElementById('local');
 
-  // local-only check-in log
-  let log = JSON.parse(localStorage.getItem('checkin-log') || '[]');
+  // local-only daily check-in (same behavior across browsers)
+  const TODAY = new Date().toISOString().slice(0,10);
+  let lastDay = localStorage.getItem('checkin-day');
 
-  function updateLocal(){
-    if(log.length === 0){
+  function updateUI(){
+    if(lastDay === TODAY){
+      btn.textContent = 'Checked in today';
+      btn.disabled = true;
+      local.textContent = 'Today is complete.';
+    } else {
+      btn.textContent = 'Check in';
+      btn.disabled = false;
       local.textContent = '';
-      return;
     }
-    const last = new Date(log[log.length - 1]);
-    local.textContent = 'Last check-in: ' + last.toLocaleString();
   }
 
   btn.addEventListener('click', () => {
-    log.push(new Date().toISOString());
-    localStorage.setItem('checkin-log', JSON.stringify(log));
-    btn.textContent = 'Checked in';
-    btn.disabled = true;
-    updateLocal();
+    localStorage.setItem('checkin-day', TODAY);
+    lastDay = TODAY;
+    updateUI();
   });
 
-  updateLocal();
+  updateUI();
 
-  // shared-time presence message
+  // shared-time presence message (global, no tracking)
   const messages = [
     'This moment is active.',
     'Others are here too.',
