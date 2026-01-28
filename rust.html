@@ -40,26 +40,26 @@ let tx = 0;
 let ty = 0;
 let intensity = 0;
 
-// ---- rust palette (locked)
+// ---- softened rust palette (cloud)
 const rust = {
-  core: "rgba(180, 80, 40, 0.8)",
-  glow: "rgba(220, 110, 60, 0.35)",
-  haze: "rgba(140, 60, 30, 0.15)",
-  smoke: "rgba(120, 70, 45, 0.08)"
+  core:  "rgba(180, 90, 55, 0.25)",
+  glow:  "rgba(200, 110, 70, 0.18)",
+  haze:  "rgba(140, 80, 50, 0.10)",
+  smoke: "rgba(120, 85, 65, 0.06)"
 };
 
-// ---- smoke particles
+// ---- smoke particles (mist)
 const smoke = [];
 
 function spawnSmoke(x, y, power) {
   smoke.push({
-    x: x + (Math.random() - 0.5) * 10,
-    y: y + (Math.random() - 0.5) * 10,
-    r: 20 + Math.random() * 20,
-    vx: (Math.random() - 0.5) * 0.3,
-    vy: -0.3 - Math.random() * 0.6,
+    x: x + (Math.random() - 0.5) * 20,
+    y: y + (Math.random() - 0.5) * 20,
+    r: 30 + Math.random() * 40,
+    vx: (Math.random() - 0.5) * 0.15,
+    vy: -0.15 - Math.random() * 0.3,
     life: 1,
-    decay: 0.006 + Math.random() * 0.004,
+    decay: 0.003 + Math.random() * 0.002,
     power
   });
 }
@@ -70,63 +70,67 @@ addEventListener("pointerdown", e => {
   tx = e.clientX;
   ty = e.clientY;
 });
-
 addEventListener("pointermove", e => {
   if (!touching) return;
   tx = e.clientX;
   ty = e.clientY;
 });
-
 addEventListener("pointerup", () => touching = false);
 addEventListener("pointercancel", () => touching = false);
 
 // ---- loop
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // soft temporal fade (cloud memory)
+  ctx.fillStyle = "rgba(10,15,13,0.08)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // ease intensity
   intensity += ((touching ? 1 : 0) - intensity) * 0.08;
 
-  // ---- rust touch bloom
+  // ---- cloud-like rust bloom
   if (intensity > 0.001) {
-    const baseR = 120 + intensity * 180;
-    const rx = baseR * 1.25;
-    const ry = baseR * 0.75;
+    const t = performance.now() * 0.0006;
+    const baseR = 160 + intensity * 260;
 
     ctx.save();
     ctx.translate(tx, ty);
-    ctx.rotate(Math.sin(performance.now() * 0.002) * 0.02);
-    ctx.scale(1, ry / rx);
+    ctx.rotate(Math.sin(t * 2) * 0.01);
 
-    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
-    g.addColorStop(0, rust.core);
-    g.addColorStop(0.45, rust.glow);
-    g.addColorStop(1, "rgba(0,0,0,0)");
+    for (let i = 0; i < 3; i++) {
+      const r = baseR * (0.6 + i * 0.35);
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
 
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(0, 0, rx, 0, Math.PI * 2);
-    ctx.fill();
+      g.addColorStop(0, rust.core);
+      g.addColorStop(0.4, rust.glow);
+      g.addColorStop(0.8, rust.haze);
+      g.addColorStop(1, "rgba(0,0,0,0)");
 
-    ctx.fillStyle = rust.haze;
-    ctx.beginPath();
-    ctx.arc(0, 0, rx * 1.25, 0, Math.PI * 2);
-    ctx.fill();
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(
+        Math.sin(t * (i + 1)) * 8,
+        Math.cos(t * (i + 1)) * 8,
+        r,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    }
 
     ctx.restore();
 
-    // spawn smoke gently while touching
-    if (Math.random() < intensity * 0.6) {
+    // gentle vapor spawn
+    if (Math.random() < intensity * 0.35) {
       spawnSmoke(tx, ty, intensity);
     }
   }
 
-  // ---- draw smoke
+  // ---- draw mist
   for (let i = smoke.length - 1; i >= 0; i--) {
     const p = smoke[i];
     p.x += p.vx;
     p.y += p.vy;
-    p.r += 0.15;
+    p.r += 0.12;
     p.life -= p.decay;
 
     if (p.life <= 0) {
@@ -135,8 +139,8 @@ function draw() {
     }
 
     ctx.fillStyle = rust.smoke.replace(
-      "0.08",
-      (p.life * 0.12 * p.power).toFixed(3)
+      "0.06",
+      (p.life * 0.1 * p.power).toFixed(3)
     );
 
     ctx.beginPath();
