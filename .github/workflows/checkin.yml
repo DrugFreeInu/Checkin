@@ -1,0 +1,36 @@
+name: Live Check In
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update daily count
+        run: |
+          FILE=data/state.json
+          TODAY=$(date -u +"%Y-%m-%d")
+
+          CURRENT_DATE=$(jq -r '.date' $FILE)
+          COUNT=$(jq -r '.count' $FILE)
+
+          if [ "$CURRENT_DATE" != "$TODAY" ]; then
+            COUNT=0
+          fi
+
+          COUNT=$((COUNT + 1))
+
+          jq --arg date "$TODAY" --argjson count "$COUNT" \
+            '.date=$date | .count=$count' $FILE > tmp.json && mv tmp.json $FILE
+
+      - name: Commit
+        run: |
+          git config user.name "checkin-bot"
+          git config user.email "checkin@users.noreply.github.com"
+          git add data/state.json
+          git commit -m "check in"
+          git push
