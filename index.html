@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CheckIn</title>
+  <meta name="description" content="A calm, honest place to check in, find support, and take the next step." />
+  <style>
+    :root{
+      --bg:#0f1412;
+      --panel:#151c18;
+      --ink:#e9efe9;
+      --muted:#a8b3ad;
+      --accent:#6fa89a;
+      --line:#22312b;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%}
+    body{
+      background:linear-gradient(180deg,#0b100e 0%,var(--bg) 60%);
+      color:var(--ink);
+      font-family:system-ui,-apple-system,Segoe UI,Inter,Helvetica,Arial,sans-serif;
+      line-height:1.55;
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{
+      position:sticky;top:0;z-index:10;
+      backdrop-filter:saturate(120%) blur(6px);
+      background:rgba(15,20,18,.75);
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{max-width:980px;margin:0 auto;padding:16px}
+    nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{font-weight:600;letter-spacing:.2px}
+    .nav a{margin-left:14px;color:var(--muted)}
+    .nav a:hover{color:var(--ink)}
+
+    .hero{
+      padding:72px 16px 48px;
+      border-bottom:1px solid var(--line);
+    }
+    .hero h1{font-size:clamp(28px,5vw,44px);margin:0 0 12px}
+    .hero p{max-width:720px;color:var(--muted);font-size:18px}
+    .cta{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+    .btn{
+      padding:10px 14px;border-radius:10px;border:1px solid var(--line);
+      background:var(--panel);color:var(--ink);cursor:pointer
+    }
+    .btn.primary{background:var(--accent);border-color:transparent;color:#0b1411;font-weight:600}
+
+    section{padding:48px 16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+    .card{
+      background:linear-gradient(180deg,#121a16,#0f1512);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:16px
+    }
+    .card h3{margin:0 0 8px}
+    .card p{color:var(--muted);margin:0}
+
+    .checkin{
+      background:linear-gradient(180deg,#0f1512,#0b100e);
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line)
+    }
+    .checkin form{max-width:520px}
+    label{display:block;margin:12px 0 6px;color:var(--muted)}
+    input,textarea{
+      width:100%;padding:10px;border-radius:10px;
+      background:#0c120f;border:1px solid var(--line);color:var(--ink)
+    }
+    textarea{min-height:120px;resize:vertical}
+
+    footer{padding:28px 16px;color:var(--muted)}
+    .fine{font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="brand">CheckIn</div>
+        <div class="nav">
+          <a href="#about">About</a>
+          <a href="#support">Support</a>
+          <a href="#checkin">Check In</a>
+          <a href="#resources">Resources</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero wrap">
+      <h1>You don’t have to carry it alone.</h1>
+      <p>
+        CheckIn is a calm, honest space for recovery. No hype. No pressure.
+        Just a place to pause, check in, and take the next right step.
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="#checkin">Check in now</a>
+        <a class="btn" href="#support">Find support</a>
+        <a class="btn" href="https://checkin.today" target="_blank" rel="noopener">Visit checkin.today</a>
+      </div>
+    </section>
+
+    <section id="about" class="wrap">
+      <div class="grid">
+        <div class="card">
+          <h3>Grounded</h3>
+          <p>Built to feel steady and human. Nothing flashy. Nothing forced.</p>
+        </div>
+        <div class="card">
+          <h3>Private</h3>
+          <p>Your check-ins are for you. No feeds. No social pressure.</p>
+        </div>
+        <div class="card">
+          <h3>Practical</h3>
+          <p>Clear steps, real resources, and support you can actually use.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="support" class="wrap">
+      <h2>Support options</h2>
+      <div class="grid">
+        <div class="card"><h3>Outpatient & Groups</h3><p>Find local programs, schedules, and what to expect.</p></div>
+        <div class="card"><h3>One-on-one</h3><p>Directories for counselors, therapists, and peer support.</p></div>
+        <div class="card"><h3>Daily structure</h3><p>Simple routines that help keep the day stable.</p></div>
+      </div>
+    </section>
+
+    <section id="checkin" class="checkin">
+      <div class="wrap">
+        <h2>Daily check-in</h2>
+        <p class="fine">This form doesn’t submit anywhere yet. It’s a private pause.</p>
+        <form onsubmit="event.preventDefault()">
+          <label for="mood">How are you feeling right now?</label>
+          <input id="mood" placeholder="One word or a short sentence" />
+
+          <label for="body">Body check</label>
+          <input id="body" placeholder="Tired, calm, anxious, steady…" />
+
+          <label for="notes">Notes</label>
+          <textarea id="notes" placeholder="Anything you want to get out of your head"></textarea>
+
+          <div class="cta">
+            <button class="btn primary" type="submit">Save check-in</button>
+            <button class="btn" type="reset">Clear</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="resources" class="wrap">
+      <h2>Immediate help</h2>
+      <div class="grid">
+        <div class="card"><h3>US – 988</h3><p>Call or text 988 for the Suicide & Crisis Lifeline.</p></div>
+        <div class="card"><h3>NA / AA</h3><p>Meeting finders for peer-led recovery groups.</p></div>
+        <div class="card"><h3>Emergency</h3><p>If you’re in danger, call local emergency services.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <p class="fine">CheckIn is a support resource, not medical advice.</p>
+  </footer>
+</body>
+</html>
