@@ -40,7 +40,7 @@ let tx = 0;
 let ty = 0;
 let intensity = 0;
 
-// ---- rust color palette
+// ---- rust color palette (DO NOT TOUCH 🔥)
 const rust = {
   core: "rgba(180, 80, 40, 0.8)",
   glow: "rgba(220, 110, 60, 0.35)",
@@ -71,24 +71,39 @@ function draw() {
   intensity += ((touching ? 1 : 0) - intensity) * 0.08;
 
   if (intensity > 0.001) {
-    // main contact glow
-    const r = 120 + intensity * 180;
+    const baseR = 120 + intensity * 180;
 
-    const g = ctx.createRadialGradient(tx, ty, 0, tx, ty, r);
+    // finger-pad shape
+    const rx = baseR * 1.25; // wider
+    const ry = baseR * 0.75; // flatter
+
+    ctx.save();
+    ctx.translate(tx, ty);
+
+    // subtle organic wobble (keeps it alive)
+    ctx.rotate(Math.sin(performance.now() * 0.002) * 0.02);
+
+    // squash into ellipse
+    ctx.scale(1, ry / rx);
+
+    // main contact glow
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
     g.addColorStop(0, rust.core);
-    g.addColorStop(0.4, rust.glow);
+    g.addColorStop(0.45, rust.glow);
     g.addColorStop(1, "rgba(0,0,0,0)");
 
     ctx.fillStyle = g;
     ctx.beginPath();
-    ctx.arc(tx, ty, r, 0, Math.PI * 2);
+    ctx.arc(0, 0, rx, 0, Math.PI * 2);
     ctx.fill();
 
-    // secondary rust haze
+    // soft outer haze
     ctx.fillStyle = rust.haze;
     ctx.beginPath();
-    ctx.arc(tx, ty, r * 1.2, 0, Math.PI * 2);
+    ctx.arc(0, 0, rx * 1.25, 0, Math.PI * 2);
     ctx.fill();
+
+    ctx.restore();
   }
 
   requestAnimationFrame(draw);
